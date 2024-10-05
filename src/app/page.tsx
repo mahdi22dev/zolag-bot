@@ -1,16 +1,18 @@
 "use client";
 
 import Modal from "@/components/moda";
+import { Data } from "@/lib/types";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [formValues, setFormValues] = useState({
     code: localStorage.getItem("code") || "",
-    xgTeam1: "",
-    xgTeam2: "",
+    xgTeam1: "1.44",
+    xgTeam2: "1.44",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [result, setResults] = useState<Data>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -27,12 +29,20 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     try {
-      await fetch(
+      setResults(undefined);
+      setError(false);
+      const response = await fetch(
         `/api?code=${formValues.code}&xg1=${formValues.xgTeam1}&xg2=${formValues.xgTeam2}`
       );
-      setError(true);
+      const data = (await response.json()) as Data;
+      if (!data.success) {
+        setError(true);
+      } else {
+        setResults(data);
+      }
     } catch (error) {
       console.error("Form submission error:", error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -43,11 +53,10 @@ export default function Home() {
   }, [formValues.code]);
 
   useEffect(() => {
-    if (!isModalVisible) {
+    if (error) {
       setIsModalVisible(true);
     }
   }, [error]);
-
   return (
     <main className="bg-gradient-to-r from-green-500 to-blue-600 w-full p-10 min-h-[100vh] flex flex-col justify-center items-center">
       <form
@@ -107,18 +116,66 @@ export default function Home() {
         </button>
       </form>
 
-      {/* Modal */}
+      {/* Display results */}
+      {result && (
+        <div className="bg-white shadow-lg rounded-lg w-full max-w-2xl p-8 mt-6 flex flex-col space-y-5 text-right">
+          <h2 className="text-xl font-bold text-gray-800">نتائج التوقعات</h2>
+          <div className="space-y-3">
+            {/* First Half */}
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-600">
+                الشوط الأول
+              </h3>
+              {result.data.firstHalf.map((r, index) => (
+                <p key={index} className="text-gray-700">
+                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                </p>
+              ))}
+            </div>
+
+            {/* Second Half */}
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-600">
+                الشوط الثاني
+              </h3>
+              {result.data.secondHalf.map((r, index) => (
+                <p key={index} className="text-gray-700">
+                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                </p>
+              ))}
+            </div>
+
+            {/* Full Match */}
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-600">
+                المباراة كاملة
+              </h3>
+              {result.data.fullMatch.map((r, index) => (
+                <p key={index} className="text-gray-700">
+                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <Modal isVisible={isModalVisible} onClose={closeModal}>
-        <h2 className="text-2xl font-semibold mb-4">Captivating Content</h2>
-        <p>
-          In this labyrinth of a modal, you’ll find an intricate experience.
-        </p>
-        <button
-          onClick={closeModal}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-        >
-          Close
-        </button>
+        <div className="p-4 max-w-xs sm:max-w-md w-full bg-white rounded-lg shadow-lg">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center">
+            خطأ في الإدخال
+          </h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-3 text-center">
+            يرجى التأكد من أن القيم المدخلة لـ <strong>XG1</strong> و{" "}
+            <strong>XG2</strong> هي أرقام صحيحة، وأن الكود صحيح ويعمل بشكل صحيح.
+          </p>
+          <button
+            onClick={closeModal}
+            className="w-full mt-4 px-4 py-2 text-sm sm:text-base bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200"
+          >
+            إغلاق
+          </button>
+        </div>
       </Modal>
     </main>
   );
