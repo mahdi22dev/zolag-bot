@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "BB bot",
-  description: "taw9e3 mobaryate",
+  title: "ScoreMaster",
+  description: "Football match predictions",
 };
 
 export default function RootLayout({
@@ -28,8 +28,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <nav className="w-full h-20 bg-yellow-50 text-black text-4xl flex justify-center items-center">
-          BB bot
+        <nav className="w-full h-20 bg-gradient-to-r from-blue-700 to-green-500 text-white text-4xl flex justify-center items-center font-bold shadow-lg">
+          ScoreMaster
         </nav>
         {children}
       </body>
