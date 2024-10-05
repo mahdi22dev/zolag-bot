@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [formValues, setFormValues] = useState({
-    code: localStorage.getItem("code") || "",
+    code: (global?.window !== undefined && localStorage.getItem("code")) || "",
     xgTeam1: "",
     xgTeam2: "",
   });
