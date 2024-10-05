@@ -119,16 +119,18 @@ export default function Home() {
       {/* Display results */}
       {result && (
         <div className="bg-white shadow-lg rounded-lg w-full max-w-2xl p-8 mt-6 flex flex-col space-y-5 text-right">
-          <h2 className="text-xl font-bold text-gray-800">نتائج التوقعات</h2>
+          <h2 className="text-xl font-bold text-gray-800">
+            Prediction Results
+          </h2>
           <div className="space-y-3">
             {/* First Half */}
             <div className="bg-gray-100 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-blue-600">
-                الشوط الأول
+                First Half
               </h3>
               {result.data.firstHalf.map((r, index) => (
                 <p key={index} className="text-gray-700">
-                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                  Expected Score: {r.score} - Probability: {r.probability}%
                 </p>
               ))}
             </div>
@@ -136,11 +138,11 @@ export default function Home() {
             {/* Second Half */}
             <div className="bg-gray-100 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-blue-600">
-                الشوط الثاني
+                Second Half
               </h3>
               {result.data.secondHalf.map((r, index) => (
                 <p key={index} className="text-gray-700">
-                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                  Expected Score: {r.score} - Probability: {r.probability}%
                 </p>
               ))}
             </div>
@@ -148,11 +150,11 @@ export default function Home() {
             {/* Full Match */}
             <div className="bg-gray-100 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-blue-600">
-                المباراة كاملة
+                Full Match
               </h3>
               {result.data.fullMatch.map((r, index) => (
                 <p key={index} className="text-gray-700">
-                  النتيجة المتوقعة: {r.score} - الاحتمال: {r.probability}%
+                  Expected Score: {r.score} - Probability: {r.probability}%
                 </p>
               ))}
             </div>
