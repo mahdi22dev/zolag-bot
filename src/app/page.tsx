@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [formValues, setFormValues] = useState({
     code: localStorage.getItem("code") || "",
-    xgTeam1: "1.44",
-    xgTeam2: "1.44",
+    xgTeam1: "",
+    xgTeam2: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
