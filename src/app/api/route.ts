@@ -32,13 +32,15 @@ const calculateScoreProbabilities = (
 
       scoreProbabilities.push({
         score: `${goalsTeam1}-${goalsTeam2}`,
-        probability: combinedProbability, // Keep probability in decimal
+        probability: (combinedProbability * 100).toFixed(2), // Convert to percentage
       });
     }
   }
 
   // Sort the scores by the most likely outcomes
-  scoreProbabilities.sort((a, b) => b.probability - a.probability);
+  scoreProbabilities.sort(
+    (a, b) => parseFloat(b.probability) - parseFloat(a.probability)
+  );
 
   return scoreProbabilities;
 };
@@ -53,7 +55,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Missing parameters",
       },
       { status: 400 }
     );
@@ -80,11 +81,11 @@ export async function GET(request: NextRequest) {
     const xgTeam1 = Number(xg1);
     const xgTeam2 = Number(xg2);
 
-    // Calculate xG values for each half (assumed to be split 50/50 for the first and second halves)
+    // Calculate xG values for each half (assumed to be split 50/50)
     const xgTeam1FirstHalf = xgTeam1 * 0.5;
-    const xgTeam1SecondHalf = xgTeam1 * 0.5; // Adjusted to use the second half
+    const xgTeam1SecondHalf = xgTeam1 * 0.5;
     const xgTeam2FirstHalf = xgTeam2 * 0.5;
-    const xgTeam2SecondHalf = xgTeam2 * 0.5; // Adjusted to use the second half
+    const xgTeam2SecondHalf = xgTeam2 * 0.5;
 
     // Calculate score probabilities for the first half
     const scoreProbabilitiesFirstHalf = calculateScoreProbabilities(
