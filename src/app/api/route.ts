@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // Helper function to calculate factorial
@@ -57,7 +56,7 @@ export async function GET(request: NextRequest) {
 
   // Add CORS headers to the response
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "http://127.0.0.1:5500", // Replace with the appropriate origin
+    "Access-Control-Allow-Origin": "*", // Allow all origins
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
