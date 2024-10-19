@@ -13,7 +13,6 @@ const factorial = (n: number): number => {
 
 // Poisson distribution function to calculate goal probabilities
 const poisson = (xg: number, k: number): number => {
-  if (isNaN(xg) || isNaN(k) || xg < 0 || k < 0) return 0; // Ensure valid inputs
   return (Math.pow(xg, k) * Math.exp(-xg)) / factorial(k);
 };
 
@@ -29,15 +28,11 @@ const calculateScoreProbabilities = (
     for (let goalsTeam2 = 0; goalsTeam2 <= maxGoals; goalsTeam2++) {
       const probTeam1 = poisson(xgTeam1, goalsTeam1);
       const probTeam2 = poisson(xgTeam2, goalsTeam2);
-
       const combinedProbability = probTeam1 * probTeam2;
 
-      // Handle potential NaN values and convert probabilities to percentages
       scoreProbabilities.push({
         score: `${goalsTeam1}-${goalsTeam2}`,
-        probability: isNaN(combinedProbability)
-          ? "0.00"
-          : (combinedProbability * 100).toFixed(2), // Convert to percentage
+        probability: (combinedProbability * 100).toFixed(2), // Convert to percentage
       });
     }
   }
@@ -52,6 +47,7 @@ const calculateScoreProbabilities = (
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get("code");
   const xg1 = searchParams.get("xg1");
   const xg2 = searchParams.get("xg2");
 
@@ -67,30 +63,35 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(null, { headers: corsHeaders });
   }
 
-  if (!xg1 || !xg2) {
+  if (!code || !xg1 || !xg2) {
     return NextResponse.json(
       {
         success: false,
-        message: "Missing xG values.",
       },
       { status: 400, headers: corsHeaders }
     );
   }
 
   try {
-    // Convert xG values to numbers and validate
-    const xgTeam1 = parseFloat(xg1);
-    const xgTeam2 = parseFloat(xg2);
+    const auth = await prisma.user.findUnique({
+      where: {
+        code: code,
+      },
+    });
 
-    if (isNaN(xgTeam1) || isNaN(xgTeam2)) {
+    if (!auth) {
       return NextResponse.json(
         {
+          error: "Invalid code or user not found",
           success: false,
-          message: "Invalid xG values.",
         },
-        { status: 400, headers: corsHeaders }
+        { status: 404, headers: corsHeaders }
       );
     }
+
+    // Convert xG values to numbers
+    const xgTeam1 = Number(xg1);
+    const xgTeam2 = Number(xg2);
 
     // Calculate xG values for each half (assumed to be split 50/50)
     const xgTeam1FirstHalf = xgTeam1 * 0.5;
